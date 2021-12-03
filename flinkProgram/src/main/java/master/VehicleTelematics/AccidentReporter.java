@@ -27,6 +27,23 @@ public class AccidentReporter {
 	public static SingleOutputStreamOperator<Tuple7<Integer,Integer,Integer,Integer,Integer,Integer,Integer>> AccidentReport(SingleOutputStreamOperator<Tuple8<Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer>> input) {
 		
 		SingleOutputStreamOperator<Tuple7<Integer,Integer,Integer,Integer,Integer,Integer,Integer>> output = input
+		.filter(new FilterFunction<Tuple8<Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer>>() {
+			
+			    	
+			@Override
+			public boolean filter(Tuple8<Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer> event) throws Exception {
+				
+				if(event.f2 == 0){
+					return true;
+				}
+				
+				else {
+					return false;
+				}
+				
+			}
+			
+		})
 		.keyBy(new KeySelector<Tuple8<Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer>,Tuple5<Integer,Integer,Integer,Integer,Integer>>() {
 			
 			// Create a Keyed Stream for events with the same VID (car identifier), going through the same highway and direction
@@ -66,12 +83,12 @@ public class AccidentReporter {
 					
 				}
 				
-				if (cnt < 4) {
+				if (cnt < 4 || (time2-time1) != 90) {
 					return;
 				}
 				
 				// Output = time1, time2, vid, xway, seg, dir, pos
-				out.collect(new Tuple7<Integer,Integer,Integer,Integer,Integer,Integer,Integer>(time1,time2,key.f0,key.f1,key.f3,key.f2,cnt-1));
+				out.collect(new Tuple7<Integer,Integer,Integer,Integer,Integer,Integer,Integer>(time1,time2,key.f0,key.f1,key.f3,key.f2,key.f4));
 				
 			}
 		});

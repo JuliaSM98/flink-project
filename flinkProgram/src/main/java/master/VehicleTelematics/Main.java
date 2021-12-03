@@ -40,12 +40,12 @@ public class Main {
         
     	SingleOutputStreamOperator<Tuple6<Integer,Integer,Integer,Integer,Integer,Integer>> speedControl = new SpdFilter().speedFilter(filterOut);
     	SingleOutputStreamOperator<Tuple6<Integer,Integer,Integer,Integer,Integer,Double>> avgSpeedControl = new AvgSpdCtrl().AverageSpeedControl(filterOut);
-    	//SingleOutputStreamOperator<Tuple7<Integer,Integer,Integer,Integer,Integer,Integer,Integer>> accReporter = new AccidentReporter().AccidentReport(filterOut);
+    	SingleOutputStreamOperator<Tuple7<Integer,Integer,Integer,Integer,Integer,Integer,Integer>> accReporter = new AccidentReporter().AccidentReport(filterOut);
     	
     	
     	speedControl.writeAsCsv(Paths.get(outFilePath, "speedfines.csv").toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
     	avgSpeedControl.writeAsCsv(Paths.get(outFilePath, "avgspeedfines.csv").toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
-    	//accReporter.writeAsCsv(Paths.get(outFilePath, "accidents.csv").toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
+    	accReporter.writeAsCsv(Paths.get(outFilePath, "accidents.csv").toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
 
     	try {
             env.execute("Main");
