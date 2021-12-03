@@ -28,7 +28,6 @@ public class Main {
 		DataStreamSource<String> source = env.readTextFile(inFilePath);
 
 		SingleOutputStreamOperator<Tuple8<Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer>> filterOut = source.map(new MapFunction<String, Tuple8<Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer>>() {
-
             @Override
             public Tuple8<Integer,Integer,Integer,Integer,Integer,Integer,Integer,Integer> map(String in) throws Exception {
                 String[] fieldArray = in.split(",");
@@ -39,10 +38,14 @@ public class Main {
         });
         
         
-    	SingleOutputStreamOperator<Tuple6<Integer,Integer,Integer,Integer,Integer,Integer>> speedOutput = new SpdFilter().speedFilter(filterOut);
+    	SingleOutputStreamOperator<Tuple6<Integer,Integer,Integer,Integer,Integer,Integer>> speedControl = new SpdFilter().speedFilter(filterOut);
+    	SingleOutputStreamOperator<Tuple6<Integer,Integer,Integer,Integer,Integer,Double>> avgSpeedControl = new AvgSpdCtrl().AverageSpeedControl(filterOut);
+    	//SingleOutputStreamOperator<Tuple7<Integer,Integer,Integer,Integer,Integer,Integer,Integer>> accReporter = new AccidentReporter().AccidentReport(filterOut);
     	
     	
-    	speedOutput.writeAsCsv(Paths.get(outFilePath, "speedfines.csv").toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
+    	speedControl.writeAsCsv(Paths.get(outFilePath, "speedfines.csv").toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
+    	avgSpeedControl.writeAsCsv(Paths.get(outFilePath, "avgspeedfines.csv").toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
+    	//accReporter.writeAsCsv(Paths.get(outFilePath, "accidents.csv").toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
 
     	try {
             env.execute("Main");
