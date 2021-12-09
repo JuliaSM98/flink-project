@@ -1,3 +1,3 @@
 # flink-project
--Pablo Crucera Barrero
--Júlia Sánchez Martínez
+* Pablo Crucera Barrero
+* Júlia Sánchez Martínez
